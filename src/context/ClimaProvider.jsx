@@ -11,6 +11,8 @@ const ClimaProvider = ({ children }) => {
         pais: "",
     });
     const [resultado, setResultado] = useState({});
+    const [cargando, setCargando] = useState(false);
+    const [noResultado, setNoResultado] = useState(false);
 
     const datoBusqueda = (e) => {
         // En este caso, el objeto especifica que la propiedad correspondiente en el estado *(ciudad o pais) se actualizará con el valor de la entrada con el mismo nombre en este caso en name ([e.target.name]) copiando el objeto anterior para no ser reemplazado, recuerda tambien puedes hacerlo con id ([e.target.id])
@@ -23,6 +25,9 @@ const ClimaProvider = ({ children }) => {
 
     //funcion que se conectara con la API
     const consultarClima = async (busqueda) => {
+        setCargando(true);
+        setNoResultado(false);
+        setResultado({});
         try {
             const { ciudad, pais } = busqueda;
             const appId = import.meta.env.VITE_API_KEY;
@@ -39,15 +44,26 @@ const ClimaProvider = ({ children }) => {
 
             //*Debido a que axios nos devuelve data pero eso usamos en la anterior url nos saldra error asi que podemos usar destructuracion y renombramos la variable
             const { data: clima } = await axios.get(urlClima);
+            console.log(clima);
             setResultado(clima);
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            setNoResultado("No existe Resultado");
+        } finally {
+            setCargando(false);
         }
     };
 
     return (
         <ClimaContext.Provider
-            value={{ busqueda, datoBusqueda, consultarClima, resultado }}
+            value={{
+                busqueda,
+                datoBusqueda,
+                consultarClima,
+                resultado,
+                cargando,
+                noResultado,
+            }}
         >
             {children}
         </ClimaContext.Provider>

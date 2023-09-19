@@ -23,6 +23,7 @@ const Formulario = () => {
         }
 
         try {
+            setAlert('')
             consultarClima(busqueda)
         } catch (error) {
             console.log(error);
