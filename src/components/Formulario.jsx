@@ -1,16 +1,55 @@
-import React from "react";
+import { useState } from "react";
+import useClima from "../hooks/useClima";
 
 const Formulario = () => {
+    const [alert, setAlert] = useState("");
+
+    const { busqueda, datoBusqueda, consultarClima } = useClima();
+    const { ciudad, pais } = busqueda;
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        //*validando campos destructurados
+        // if ([ciudad, pais].includes("")) {
+        //     setAlert("Todos los campos son obligatorios");
+        //     return;
+        // }
+
+        //*o podemos usar propiedades del objeto apra validar
+        if (Object.values(busqueda).includes("")) {
+            setAlert("Todos los campos son obligatorios");
+            return;
+        }
+
+        try {
+            consultarClima(busqueda)
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className="contenedor">
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div className="campo">
                     <label htmlFor="ciudad">Ingrese la Ciudad</label>
-                    <input type="text" id="ciudad" name="ciudad" />
+                    <input
+                        type="text"
+                        id="ciudad"
+                        name="ciudad"
+                        value={ciudad}
+                        onChange={datoBusqueda}
+                    />
                 </div>
                 <div className="campo">
                     <label htmlFor="pais">Escoja el país</label>
-                    <select id="pais" name="pais">
+                    <select
+                        id="pais"
+                        name="pais"
+                        value={pais}
+                        onChange={datoBusqueda}
+                    >
                         <option value=""> Seleccione un país</option>
                         <option value="US">Estados Unidos</option>
                         <option value="EC">Ecuador</option>
@@ -22,8 +61,8 @@ const Formulario = () => {
                         <option value="PE">Perú</option>
                     </select>
                 </div>
-
-                <input type="submit" value='Consultar Clima'/>
+                <input type="submit" value="Consultar Clima" />
+                {alert && <p className="alerta">{alert}</p>}
             </form>
         </div>
     );
